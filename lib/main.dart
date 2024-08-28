@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:txhmmain/screen/general_screen/loading_screen.dart';
 
 import 'screen/general_screen/preview_screen.dart';
 
@@ -31,14 +32,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    print('Bạn đã tắt app');
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -47,7 +40,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: const preview_screen(),
+      home: const loading_screen(),
     );
   }
 }

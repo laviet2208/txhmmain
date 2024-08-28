@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../cartData/CartData.dart';
+import '../finalData.dart';
 import '../voucherData/Voucher.dart';
 import 'Time.dart';
 
@@ -15,6 +17,21 @@ Time getCurrentTime() {
   currentTime.year = now.year;
 
   return currentTime;
+}
+
+int calculateDiscountPercentage(double originalPrice, double discountedPrice) {
+  // Tính phần trăm giảm giá
+  double discount = ((originalPrice - discountedPrice) / originalPrice) * 100;
+  // Làm tròn về số nguyên
+  return discount.round();
+}
+
+double calculatetotalMoney() {
+  double cost = 0;
+  for (Cartdata cartdata in finalData.cartList) {
+    cost = cost + cartdata.product.cost * cartdata.number;
+  }
+  return cost;
 }
 
 double getVoucherSale(Voucher voucher, double cost) {

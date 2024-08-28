@@ -1,0 +1,126 @@
+import 'package:flutter/material.dart';
+import 'package:txhmmain/screen/general_screen/preview_screen.dart';
+import '../../../../../data/finalData.dart';
+import '../../../../../data/orderData/Order.dart';
+import '../../../../../data/otherdata/Tool.dart';
+import '../../../../general_screen/utils/utils.dart';
+import '../../../../mobile_screen/cart_screen/check_out/check_out_controller.dart';
+import '../../../../mobile_screen/cart_screen/ingredient/cost_text_line.dart';
+import 'receiver_info.dart';
+
+class total_money_check_out extends StatefulWidget {
+  final Order order;
+  const total_money_check_out({super.key, required this.order});
+
+  @override
+  State<total_money_check_out> createState() => _total_money_check_outState();
+}
+
+class _total_money_check_outState extends State<total_money_check_out> {
+  bool loading = false;
+
+  bool _canPush() {
+    if (widget.order.receiver.name != '' && widget.order.receiver.district != '' && widget.order.receiver.city != '' &&
+        widget.order.receiver.province != '' && widget.order.receiver.nation != '' && widget.order.receiver.podcode != '' && widget.order.receiver.phoneNumber != '') {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width/2.5;
+    return Container(
+      width: width,
+      child: Padding(
+        padding: EdgeInsets.only(left: 10, right: 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 10,),
+
+            cost_text_line(title: 'Items (' + widget.order.productList.length.toString() + ')', content: getStringNumber(calculatetotalMoney()) + ' .vnđ', size: width/50, contentColor: Colors.black, titleColor: Colors.grey,),
+
+            SizedBox(height: 10,),
+
+            GestureDetector(
+              child: cost_text_line(title: 'Voucher', content: (widget.order.voucher.id == '' ? 'Chưa chọn mã' : ('- ' + getStringNumber(getVoucherSale(widget.order.voucher, calculatetotalMoney())) + ' .vnđ')), size: width/50, contentColor: Colors.blue, titleColor: Colors.grey,),
+              onTap: () {
+
+              },
+            ),
+
+            SizedBox(height: 10,),
+
+            Container(
+              height: 0.5,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+              ),
+            ),
+
+            SizedBox(height: 10,),
+
+            cost_text_line(title: 'Tổng tiền', content: getStringNumber(calculatetotalMoney() - getVoucherSale(widget.order.voucher, calculatetotalMoney())) + ' .vnđ', size: width/50, contentColor: Colors.black, titleColor: Colors.black,),
+
+            SizedBox(height: 20,),
+
+            Container(
+              height: 0.5,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+              ),
+            ),
+
+            receiver_info(order: widget.order),
+
+            SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: EdgeInsets.only(left: 0, right: 0),
+                child: TextButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll<Color>(Colors.blue),
+                  ),
+                  onPressed: () async {
+                    if (_canPush()) {
+                      String id = (DateTime.now().hour >= 10 ? DateTime.now().hour.toString() : '0' + DateTime.now().hour.toString()) + (DateTime.now().minute >= 10 ? DateTime.now().minute.toString() : '0' + DateTime.now().minute.toString()) + (DateTime.now().second >= 10 ? DateTime.now().second.toString() : '0' + DateTime.now().second.toString()) + (DateTime.now().day >= 10 ? DateTime.now().day.toString() : '0' + DateTime.now().day.toString()) + (DateTime.now().month >= 10 ? DateTime.now().month.toString() : '0' + DateTime.now().month.toString()) + (DateTime.now().year >= 10 ? DateTime.now().year.toString() : '0' + DateTime.now().year.toString());
+                      widget.order.id = 'DH' + id;
+                      widget.order.status = 'A';
+                      widget.order.createTime = getCurrentTime();
+                      widget.order.owner = finalData.account.id;
+                      setState(() {
+                        loading = true;
+                      });
+                      await check_out_controller.push_new_order(
+                        widget.order,
+                            () {setState(() {loading = false;}); Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => preview_screen()),);},
+                            () {setState(() {loading = false;});},
+                      );
+                    } else {
+                      toastMessage('Làm ơn điền đủ thông tin người nhận');
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5, bottom: 5),
+                    child: !loading ? Text(
+                      'Chấp nhận và tiếp tục',
+                      style: TextStyle(
+                        fontFamily: 'muli',
+                        color: Colors.white,
+                        fontSize: width/50,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ) : CircularProgressIndicator(color: Colors.white,),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 20,),
+          ],
+        ),
+      ),
+    );
+  }
+}

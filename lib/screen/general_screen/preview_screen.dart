@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../mobile_screen/mobile_preview_screen/mobile_preview_screen.dart';
-import '../pc_screen/pc_preview_screen.dart';
+import '../mobile_screen/preview_screen/mobile_preview_screen.dart';
+import '../pc_screen/preview_screen/pc_preview_screen.dart';
 
 class preview_screen extends StatefulWidget {
   const preview_screen({super.key});
